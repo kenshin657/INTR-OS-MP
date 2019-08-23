@@ -154,6 +154,7 @@ void FCFS(char PID[], int ArrivalTime[], int BurstTime[], int NumberOfProcesses,
 	int i, j, temp1,temp2, ServiceTime = 0;
 	char temp;
 
+	//FCFS ALGORITHIM USED (BUBBLE SORT BASED ON ARRIVAL TIME)
 	for(i = 0; i < NumberOfProcesses; i++) {
 		for(j = 0; j < (NumberOfProcesses - i - 1); j++) {
 			if(ArrivalTime[j] > ArrivalTime[j+1]) {
@@ -170,15 +171,18 @@ void FCFS(char PID[], int ArrivalTime[], int BurstTime[], int NumberOfProcesses,
 		}
 	}
 
+	//CALCULATION OF AWT
 	for(i = 0; i < NumberOfProcesses; i++) {
 		ServiceTime += ArrivalTime[i];
 		(*FCFS_AWT) += ServiceTime - BurstTime[i];
 	}
+	for(i = 0; i < NumberOfProcesses; i++) 
+		sFCFS[i] = PID[i];
 
 	(*FCFS_AWT) /= NumberOfProcesses;
 
-	printf("Sorted PID/ Guntt Chart: %s", PID);
-	printf("FCFS AWT = %f", *FCFS_AWT);
+	printf("Guntt Chart: %s", sFCFS);
+	printf("\nFCFS AWT = %f", *FCFS_AWT);
 	/*printf("\nSorted Burst Time: ");
 	for(i = 0; i < NumberOfProcesses; i++)
 		printf("%d", BurstTime[i]);
