@@ -207,7 +207,7 @@ void FCFS(char PID[], int ArrivalTime[], int BurstTime[], int NumberOfProcesses,
 	
 	(*FCFS_AWT) = num / NumberOfProcesses;
 	printf("sFCFS = %s\n", sFCFS);
-	printf("FCFS AWT = %f\n", *FCFS_AWT);
+	printf("FCFS AWT = %f\n\n\n", *FCFS_AWT);
 }
 
 void SJF(char PID[], int ArrivalTime[], int BurstTime[], int NumberOfProcesses, char sSJF[], float* SJF_AWT)
