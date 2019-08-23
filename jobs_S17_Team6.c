@@ -15,7 +15,7 @@ int read(char PID[], int ArrivalTime[], int BurstTime[], int* NumberOfProcesses,
 	}
 	
 	char Character;	
-	int Number = 0, i, TemporaryNumber, Index = -1, NP = 0;
+	int Number = 0, i, TemporaryNumber, Index = -2, NP = 0;
 	int Values[11];
 	
 	for(i = 0; i < 11; i++) //Intializate Values
@@ -23,7 +23,6 @@ int read(char PID[], int ArrivalTime[], int BurstTime[], int* NumberOfProcesses,
 			
 	i = 0;
 	while((Character = fgetc(File)) != EOF) //Read till the end of the File
-	{
 		//printf("Character: %c\n", Character);
 		if(Character > 64 && Character < 70) //Check if Character is between A, B, C, D, or E
 		{
@@ -32,26 +31,8 @@ int read(char PID[], int ArrivalTime[], int BurstTime[], int* NumberOfProcesses,
 			//printf("Index after scanning a letter: %d\n", Index);
 		}
 		
-		else if(Character == 44) //Check if Character is a comma
+		else if(Character == 44 || Character == 81) //Check if Character is a comma or a Q
 		{
-			Index++;
-			Number = 0;
-			//printf("Index after scanning a comma: %d\n", Index);
-		}
-		
-		else if (Character == 61)
-			Number = 0;
-		
-		else if(Character > 47 && Character < 58) //Check if Character is an integer
-		{		
-			TemporaryNumber = Character - 48;
-			
-			//printf("i: %d, TemporaryNumber: %d\n", i, TemporaryNumber);
-			
-			Number = Number * 10 + (TemporaryNumber); //Convert char to int
-			
-			//printf("i: %d, Number: %d\n", i, Number);
-			
 			if((i != 0) && (i % 2 == 0) && (Values[i] > Values[i - 2]))
 			{
 				printf("Arrival times must be greater than or equal to the arrival time before it");
@@ -69,8 +50,50 @@ int read(char PID[], int ArrivalTime[], int BurstTime[], int* NumberOfProcesses,
 				Values[i] = Number;
 				i++;
 			}
+			
+			Index++;
+			Number = 0;
+			//printf("Index after scanning a comma: %d\n", Index);
 		}
-	}
+		
+		else if (Character == 61) //Check if Character is a =
+			Number = 0;
+		
+		else if(Character > 47 && Character < 58) //Check if Character is an integer
+		{		
+			TemporaryNumber = Character - 48;
+			
+			//printf("i: %d, TemporaryNumber: %d\n", i, TemporaryNumber);
+			
+			Number = Number * 10 + (TemporaryNumber); //Convert char to int
+			
+			//printf("i: %d, Number: %d\n", i, Number);
+		}
+	
+	for(i = 0; i < 11; i++)
+		if(i != NP * 2)
+		Values[i] = Values[i + 1];
+		
+	while((Character = fgetc(File)) != EOF)
+		if (Character == 61)
+		{
+			Values[2 * NP + 1] = Number;
+			i++;
+			
+			Number = 0;
+		}
+		
+		else if(Character > 47 && Character < 58)
+		{		
+			TemporaryNumber = Character - 48;
+			
+			//printf("i: %d, TemporaryNumber: %d\n", i, TemporaryNumber);
+			
+			Number = Number * 10 + (TemporaryNumber); //Convert char to int
+			
+			//printf("i: %d, Number: %d\n", i, Number);
+		}
+			
 
 	/*\
 	|*|	Format is PID, Arrival Time, and then Burst Time, 
