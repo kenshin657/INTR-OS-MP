@@ -132,7 +132,7 @@ int write(int Quanta, float FCFS_AWT, float SJF_AWT, float STR_AWT, float RR_AWT
 
 void FCFS(char PID[], int ArrivalTime[], int BurstTime[], int NumberOfProcesses, char sFCFS[], float* FCFS_AWT)
 {
-	int i, j, ServiceTime = 0;
+	/*int i, j, ServiceTime = 0;
 	
 	for(j = 0; j < NumberOfProcesses; j++) //Run through all of the processes
 	{
@@ -149,7 +149,49 @@ void FCFS(char PID[], int ArrivalTime[], int BurstTime[], int NumberOfProcesses,
 	
 	printf("sFCFS = %s\n", sFCFS);
 	printf("FCFS AWT = %f\n", *FCFS_AWT);
+	*/
+
+	int i, j, temp1,temp2, ServiceTime = 0;
+	char temp;
+
+	for(i = 0; i < NumberOfProcesses; i++) {
+		for(j = 0; j < (NumberOfProcesses - i - 1); j++) {
+			if(ArrivalTime[j] > ArrivalTime[j+1]) {
+			temp = ArrivalTime[j];
+			temp1 = PID[j];
+			temp2 = BurstTime[j];
+			ArrivalTime[j] = ArrivalTime[j+1];
+			PID[j] = PID[j+1];
+			BurstTime[j] = BurstTime[j+1];
+			BurstTime[j+1] = temp2;
+			PID[j+1] = temp1;
+			ArrivalTime[j+1] = temp;
+			}
+		}
+	}
+
+	for(i = 0; i < NumberOfProcesses; i++) {
+		ServiceTime += ArrivalTime[i];
+		(*FCFS_AWT) += ServiceTime - BurstTime[i];
+	}
+
+	(*FCFS_AWT) /= NumberOfProcesses;
+
+	printf("Sorted PID/ Guntt Chart: %s", PID);
+	printf("FCFS AWT = %f", *FCFS_AWT);
+	/*printf("\nSorted Burst Time: ");
+	for(i = 0; i < NumberOfProcesses; i++)
+		printf("%d", BurstTime[i]);
+	printf("\n");*/
+	/*printf("Sorted Arrival Time: ");
+	for ( i = 0; i < NumberOfProcesses; i++)
+	{
+		printf("%d", ArrivalTime[i]);
+	}*/
+	printf("\n\n");
 	
+
+
 }
 
 void SJF(char PID[], int ArrivalTime[], int BurstTime[], int NumberOfProcesses, char sSJF[], float* SJF_AWT)
@@ -220,4 +262,6 @@ int main (void)
 	//RR  (PID, ArrivalTime, BurstTime, NumberOfProcesses, Quanta, sRR, &RR_AWT);
 	
 	//write(Quanta, FCFS_AWT, SJF_AWT, STR_AWT, RR_AWT, sFCFS, sSJF, sSTR, sRR);
+
+	system("pause");
 }
