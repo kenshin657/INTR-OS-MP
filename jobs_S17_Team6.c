@@ -78,7 +78,7 @@ int read(char PID[], int ArrivalTime[], int BurstTime[], int* NumberOfProcesses,
 	|*|	Arrival Time will always be in even indices and Burst Time will always be in odd. 
 	|*|	
 	|*|	Finally, Quanta will always be at the end, 
-	|*| because each pair of Arrival Time and Burst Time is one process and Quanta is always after the processes. 
+	|*|	because each pair of Arrival Time and Burst Time is one process and Quanta is always after the processes. 
 	|*|	The formula is 2 * Number_of_Processes.
 	\*/
 
@@ -151,51 +151,52 @@ void FCFS(char PID[], int ArrivalTime[], int BurstTime[], int NumberOfProcesses,
 	printf("FCFS AWT = %f\n", *FCFS_AWT);
 	*/
 
-	int i, j, temp1,temp2, ServiceTime = 0;
+	int i, j, temp1, temp2, ServiceTime = 0;
 	char temp;
 
-	//FCFS ALGORITHIM USED (BUBBLE SORT BASED ON ARRIVAL TIME)
-	for(i = 0; i < NumberOfProcesses; i++) {
-		for(j = 0; j < (NumberOfProcesses - i - 1); j++) {
-			if(ArrivalTime[j] > ArrivalTime[j+1]) {
-			temp = ArrivalTime[j];
-			temp1 = PID[j];
-			temp2 = BurstTime[j];
-			ArrivalTime[j] = ArrivalTime[j+1];
-			PID[j] = PID[j+1];
-			BurstTime[j] = BurstTime[j+1];
-			BurstTime[j+1] = temp2;
-			PID[j+1] = temp1;
-			ArrivalTime[j+1] = temp;
+	//Sort PID using Bubble Sort
+	for(i = 0; i < NumberOfProcesses; i++)
+		for(j = 0; j < (NumberOfProcesses - i - 1); j++)
+			if(ArrivalTime[j] > ArrivalTime[j + 1])
+			{
+				temp = ArrivalTime[j];
+				temp1 = PID[j];
+				temp2 = BurstTime[j];
+				ArrivalTime[j] = ArrivalTime[j + 1];
+				PID[j] = PID[j + 1];
+				BurstTime[j] = BurstTime[j + 1];
+				BurstTime[j + 1] = temp2;
+				PID[j + 1] = temp1;
+				ArrivalTime[j + 1] = temp;
 			}
-		}
-	}
 
-	//CALCULATION OF AWT
-	for(i = 0; i < NumberOfProcesses; i++) {
+	for(i = 0; i < NumberOfProcesses; i++) 
+	{
+		//Gantt Chart
+		sFCFS[i] = PID[i];
+			
+		//Calculate Total Waiting Time
 		ServiceTime += ArrivalTime[i];
 		(*FCFS_AWT) += ServiceTime - BurstTime[i];
 	}
-	for(i = 0; i < NumberOfProcesses; i++) 
-		sFCFS[i] = PID[i];
 
 	(*FCFS_AWT) /= NumberOfProcesses;
 
-	printf("Guntt Chart: %s", sFCFS);
-	printf("\nFCFS AWT = %f", *FCFS_AWT);
-	/*printf("\nSorted Burst Time: ");
-	for(i = 0; i < NumberOfProcesses; i++)
-		printf("%d", BurstTime[i]);
-	printf("\n");*/
-	/*printf("Sorted Arrival Time: ");
-	for ( i = 0; i < NumberOfProcesses; i++)
-	{
-		printf("%d", ArrivalTime[i]);
-	}*/
-	printf("\n\n");
+	printf("Gantt Chart: %s\n", sFCFS);
+	printf("FCFS AWT = %f", *FCFS_AWT);
 	
-
-
+	/*\
+	|*|	printf("\nSorted Burst Time: ");
+	|*|	for(i = 0; i < NumberOfProcesses; i++)
+	|*|		printf("%d", BurstTime[i]);
+	|*|	printf("\n");
+	|*|	printf("Sorted Arrival Time: ");
+	|*|	for ( i = 0; i < NumberOfProcesses; i++)
+	|*|	{
+	|*|		printf("%d", ArrivalTime[i]);
+	|*|	}
+	\*/
+	printf("\n\n");
 }
 
 void SJF(char PID[], int ArrivalTime[], int BurstTime[], int NumberOfProcesses, char sSJF[], float* SJF_AWT)
@@ -225,7 +226,26 @@ void STR(char PID[], int ArrivalTime[], int BurstTime[], int NumberOfProcesses, 
 
 void RR(char PID[], int ArrivalTime[], int BurstTime[], int NumberOfProcesses, int Quanta, char sRR[], float* RR_AWT)
 {
-
+	int i, j, RemainingTime[5], maximum;
+	
+	for(i = 0; i < NumberOfProcesses; i++) 
+	{
+		RemainingTime[i] = BurstTime[i]; //Transfer BurstTime to ReaminingTime
+		if (BurstTime[i] > maximum) //Find longest process
+	       maximum = BurstTime[i];
+	}
+	
+	for(i = 0; i < NumberOfProcesses; i++)
+	{
+		if((RemainingTime[i] > 0) && (RemainingTime[i] > Quanta)) //Skip over processes that are already done
+			for(j = 0; j < Quanta; j++)
+				sRR[i + j] = 'A' + j;
+		else if (RemainingTime[i] < Quanta)	
+			for(j = 0; j < RemainingTime[i]; j++) //Prevent excess entries
+				sRR[i + j] = 'A' + j;
+		
+		RemainingTime[i] -= Quanta; //Decrement remaining time after every pass
+	}
 
 
 
@@ -256,16 +276,12 @@ int main (void)
 		sRR[i] = 0;
 	}
 	
-	
-	
 	read(PID, ArrivalTime, BurstTime, &NumberOfProcesses, &Quanta);
 	
-	FCFS(PID, ArrivalTime, BurstTime, NumberOfProcesses, sFCFS, &FCFS_AWT);
-	//SJF (PID, ArrivalTime, BurstTime, NumberOfProcesses, sSJF, &SJF_AWT);
+	//FCFS(PID, ArrivalTime, BurstTime, NumberOfProcesses, sFCFS, &FCFS_AWT);
+	SJF (PID, ArrivalTime, BurstTime, NumberOfProcesses, sSJF, &SJF_AWT);
 	//STR (PID, ArrivalTime, BurstTime, NumberOfProcesses, sSTR, &STR_AWT);
 	//RR  (PID, ArrivalTime, BurstTime, NumberOfProcesses, Quanta, sRR, &RR_AWT);
 	
 	//write(Quanta, FCFS_AWT, SJF_AWT, STR_AWT, RR_AWT, sFCFS, sSJF, sSTR, sRR);
-
-	system("pause");
 }
