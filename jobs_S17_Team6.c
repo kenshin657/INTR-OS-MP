@@ -154,37 +154,6 @@ int write(int Quanta, float FCFS_AWT, float SJF_AWT, float STR_AWT, float RR_AWT
 	fclose(File);
 }
 
- /*
-<**
- \*
-	void BubbleSort(char PID[], int ArrivalTime[], int BurstTime[])
-	{
-		int i, j, temp;
-		
-		for(i = 0; i < NumberOfProcesses; i++)
-			for(j = 0; j < (NumberOfProcesses - i - 1); j++)
-				if(ArrivalTime[j] > ArrivalTime[j + 1])
-				{
-					//Sort PID
-					temp = PID[j];
-					PID[j] = PID[j + 1];
-					PID[j + 1] = temp;
-					
-					//Sort ArrivalTime
-					temp = ArrivalTime[j];
-					ArrivalTime[j] = ArrivalTime[j + 1];
-					ArrivalTime[j + 1] = temp1;
-					
-					//Sort BurstTime
-					temp = BurstTime[j];
-					BurstTime[j] = BurstTime[j + 1];
-					BurstTime[j + 1] = temp;
-				}
-	}
-*\
-**>
-*/
-
 void FCFS(char PID[], int ArrivalTime[], int BurstTime[], int NumberOfProcesses, char sFCFS[], float* FCFS_AWT)
 {
 	int i, j, ServiceTime = 0;
