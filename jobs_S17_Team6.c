@@ -165,6 +165,8 @@ int write(int Quanta, float FCFS_AWT, float SJF_AWT, float STR_AWT, float RR_AWT
 void FCFS(char PID[], int ArrivalTime[], int BurstTime[], int NumberOfProcesses, char sFCFS[], float* FCFS_AWT)
 {
 	int i, j, ServiceTime = 0;
+	float count, wt[5];
+	float num = 0.0;
 		
 	for(j = 0; j < NumberOfProcesses; j++) //Run through all of the processes
 	{
@@ -176,12 +178,34 @@ void FCFS(char PID[], int ArrivalTime[], int BurstTime[], int NumberOfProcesses,
 	
 	
 	//Add ArrivalTime of first process
-	(*FCFS_AWT) += ArrivalTime[0];
+	//(*FCFS_AWT) += ArrivalTime[0];
 	
 	
 	//Calculating Average Waiting Time
-	(*FCFS_AWT) /= NumberOfProcesses;
+	//(*FCFS_AWT) /= NumberOfProcesses;
 	
+	for(i = 0; i < NumberOfProcesses; i++) {
+		if(i == 0) {
+			wt[0] = 0;
+			count = ArrivalTime[0] + BurstTime[i];
+		}
+		else{
+			if(count > BurstTime[i]) {
+				wt[i] = count - ArrivalTime[i];
+				count += BurstTime[i]; 
+			}
+			else{
+				wt[i] = 0;
+				count = count + BurstTime[i];
+			}	
+		}
+	}
+
+	for(i = 0; i < NumberOfProcesses; i++) {
+		num = num + wt[i];
+	}
+	
+	(*FCFS_AWT) = num / NumberOfProcesses;
 	printf("sFCFS = %s\n", sFCFS);
 	printf("FCFS AWT = %f\n", *FCFS_AWT);
 }
@@ -275,7 +299,7 @@ int main (void)
 	
 	read(PID, ArrivalTime, BurstTime, &NumberOfProcesses, &Quanta);
 	
-	//FCFS(PID, ArrivalTime, BurstTime, NumberOfProcesses, sFCFS, &FCFS_AWT);
+	FCFS(PID, ArrivalTime, BurstTime, NumberOfProcesses, sFCFS, &FCFS_AWT);
 	//SJF (PID, ArrivalTime, BurstTime, NumberOfProcesses, sSJF, &SJF_AWT);
 	//STR (PID, ArrivalTime, BurstTime, NumberOfProcesses, sSTR, &STR_AWT);
 	RR  (PID, ArrivalTime, BurstTime, NumberOfProcesses, Quanta, sRR, &RR_AWT);
