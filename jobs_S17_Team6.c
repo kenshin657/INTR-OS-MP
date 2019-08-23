@@ -7,7 +7,7 @@ int read(char PID[], int ArrivalTime[], int BurstTime[], int* NumberOfProcesses,
 {
 	FILE *File;
 	
-	File = fopen("input.txt", "r");	//open File
+	File = fopen("input.txt", "r");
 	if(File == NULL)
 	{
 		printf("Error 404: File Not Found");
@@ -18,21 +18,21 @@ int read(char PID[], int ArrivalTime[], int BurstTime[], int* NumberOfProcesses,
 	int Number = 0, i, TemporaryNumber, Index = -1, NP = 0;
 	int Values[11];
 	
-	for(i = 0; i < 11; i++) //Intialization
+	for(i = 0; i < 11; i++) //Intializate Values
 		Values[i] = 0;
 			
 	i = 0;
-	while((Character = fgetc(File)) != EOF) //read till the end of the File
+	while((Character = fgetc(File)) != EOF) //Read till the end of the File
 	{
 		//printf("Character: %c\n", Character);
-		if(Character > 64 && Character < 70) //check if Character is between A and E
+		if(Character > 64 && Character < 70) //Check if Character is between A, B, C, D, or E
 		{
 			PID[NP] = Character;
 			NP++;
 			//printf("Index after scanning a letter: %d\n", Index);
 		}
 		
-		else if(Character == 44) //check if Character is a comma
+		else if(Character == 44) //Check if Character is a comma
 		{
 			Index++;
 			Number = 0;
@@ -42,13 +42,13 @@ int read(char PID[], int ArrivalTime[], int BurstTime[], int* NumberOfProcesses,
 		else if (Character == 61)
 			Number = 0;
 		
-		else if(Character > 47 && Character < 58) // check if Character is an integer
+		else if(Character > 47 && Character < 58) //Check if Character is an integer
 		{		
 			TemporaryNumber = Character - 48;
 			
 			//printf("i: %d, TemporaryNumber: %d\n", i, TemporaryNumber);
 			
-			Number = Number * 10 + (TemporaryNumber);		//convert char to int
+			Number = Number * 10 + (TemporaryNumber); //Convert char to int
 			
 			//printf("i: %d, Number: %d\n", i, Number);
 			
@@ -57,6 +57,7 @@ int read(char PID[], int ArrivalTime[], int BurstTime[], int* NumberOfProcesses,
 				printf("Arrival times must be greater than or equal to the arrival time before it");
 				return -1;
 			}
+			
 			else if((i % 2 == 1) && (Number < 0))
 			{
 				printf("Burst times must be greater than 0");
@@ -72,14 +73,14 @@ int read(char PID[], int ArrivalTime[], int BurstTime[], int* NumberOfProcesses,
 	}
 
 	/*\
-	|*|	Since the format is PID, Arrival Time, and then Burst Time, 
-	|*|	and indices start with 0, 
+	|*|	Format is PID, Arrival Time, and then Burst Time, 
+	|*|	Indices start with 0, 
 	|*|	if PID is disregarded, 
 	|*|	Arrival Time will always be in even indices and Burst Time will always be in odd. 
-	|*|	
-	|*|	Finally, Quanta will always be at the end, 
-	|*|	because each pair of Arrival Time and Burst Time is one process and Quanta is always after the processes. 
-	|*|	The formula is 2 * Number_of_Processes.
+	|*| 
+	|*|	Each pair of Arrival Time and Burst Time is one process,
+	|*|	Quanta is always after the processes.
+	|*|	The formula is 2 * NumberOfProcesses.
 	\*/
 
 	*NumberOfProcesses = NP;
@@ -130,15 +131,46 @@ int write(int Quanta, float FCFS_AWT, float SJF_AWT, float STR_AWT, float RR_AWT
 	fclose(File);
 }
 
+ /*
+<**
+ \*
+	void BubbleSort(char PID[], int ArrivalTime[], int BurstTime[])
+	{
+		int i, j, temp;
+		
+		for(i = 0; i < NumberOfProcesses; i++)
+			for(j = 0; j < (NumberOfProcesses - i - 1); j++)
+				if(ArrivalTime[j] > ArrivalTime[j + 1])
+				{
+					//Sort PID
+					temp = PID[j];
+					PID[j] = PID[j + 1];
+					PID[j + 1] = temp;
+					
+					//Sort ArrivalTime
+					temp = ArrivalTime[j];
+					ArrivalTime[j] = ArrivalTime[j + 1];
+					ArrivalTime[j + 1] = temp1;
+					
+					//Sort BurstTime
+					temp = BurstTime[j];
+					BurstTime[j] = BurstTime[j + 1];
+					BurstTime[j + 1] = temp;
+				}
+	}
+*\
+**>
+*/
+
 void FCFS(char PID[], int ArrivalTime[], int BurstTime[], int NumberOfProcesses, char sFCFS[], float* FCFS_AWT)
 {
-	/*int i, j, ServiceTime = 0;
-	
+	int i, j, ServiceTime = 0;
+		
 	for(j = 0; j < NumberOfProcesses; j++) //Run through all of the processes
 	{
 		for(i = 0; i < BurstTime[j]; i++) //Gantt Chart
-			sFCFS[i + j] = 'A' + j;
-			
+		sFCFS[i + j] = 'A' + j;
+				
 		//Calculating Total Waiting Time
 		ServiceTime += ArrivalTime[j];
 		(*FCFS_AWT) += ServiceTime - BurstTime[j];
@@ -149,54 +181,6 @@ void FCFS(char PID[], int ArrivalTime[], int BurstTime[], int NumberOfProcesses,
 	
 	printf("sFCFS = %s\n", sFCFS);
 	printf("FCFS AWT = %f\n", *FCFS_AWT);
-	*/
-
-	int i, j, temp1, temp2, ServiceTime = 0;
-	char temp;
-
-	//Sort PID using Bubble Sort
-	for(i = 0; i < NumberOfProcesses; i++)
-		for(j = 0; j < (NumberOfProcesses - i - 1); j++)
-			if(ArrivalTime[j] > ArrivalTime[j + 1])
-			{
-				temp = ArrivalTime[j];
-				temp1 = PID[j];
-				temp2 = BurstTime[j];
-				ArrivalTime[j] = ArrivalTime[j + 1];
-				PID[j] = PID[j + 1];
-				BurstTime[j] = BurstTime[j + 1];
-				BurstTime[j + 1] = temp2;
-				PID[j + 1] = temp1;
-				ArrivalTime[j + 1] = temp;
-			}
-
-	for(i = 0; i < NumberOfProcesses; i++) 
-	{
-		//Gantt Chart
-		sFCFS[i] = PID[i];
-			
-		//Calculate Total Waiting Time
-		ServiceTime += ArrivalTime[i];
-		(*FCFS_AWT) += ServiceTime - BurstTime[i];
-	}
-
-	(*FCFS_AWT) /= NumberOfProcesses;
-
-	printf("Gantt Chart: %s\n", sFCFS);
-	printf("FCFS AWT = %f", *FCFS_AWT);
-	
-	/*\
-	|*|	printf("\nSorted Burst Time: ");
-	|*|	for(i = 0; i < NumberOfProcesses; i++)
-	|*|		printf("%d", BurstTime[i]);
-	|*|	printf("\n");
-	|*|	printf("Sorted Arrival Time: ");
-	|*|	for ( i = 0; i < NumberOfProcesses; i++)
-	|*|	{
-	|*|		printf("%d", ArrivalTime[i]);
-	|*|	}
-	\*/
-	printf("\n\n");
 }
 
 void SJF(char PID[], int ArrivalTime[], int BurstTime[], int NumberOfProcesses, char sSJF[], float* SJF_AWT)
@@ -226,33 +210,43 @@ void STR(char PID[], int ArrivalTime[], int BurstTime[], int NumberOfProcesses, 
 
 void RR(char PID[], int ArrivalTime[], int BurstTime[], int NumberOfProcesses, int Quanta, char sRR[], float* RR_AWT)
 {
-	int i, j, RemainingTime[5], maximum;
+	int i, j, h, RemainingTime[5], maximum = 0, loops;
 	
 	for(i = 0; i < NumberOfProcesses; i++) 
 	{
-		RemainingTime[i] = BurstTime[i]; //Transfer BurstTime to ReaminingTime
+		RemainingTime[i] = BurstTime[i]; //Transfer BurstTime to RemainingTime
 		if (BurstTime[i] > maximum) //Find longest process
 	       maximum = BurstTime[i];
 	}
 	
-	for(i = 0; i < NumberOfProcesses; i++)
-	{
-		if((RemainingTime[i] > 0) && (RemainingTime[i] > Quanta)) //Skip over processes that are already done
-			for(j = 0; j < Quanta; j++)
-				sRR[i + j] = 'A' + j;
-		else if (RemainingTime[i] < Quanta)	
-			for(j = 0; j < RemainingTime[i]; j++) //Prevent excess entries
-				sRR[i + j] = 'A' + j;
-		
-		RemainingTime[i] -= Quanta; //Decrement remaining time after every pass
-	}
-
-
-
-
-
-
-
+	printf("Longest Process = %d\n", maximum);
+	
+	/*\ 
+	|*|	Longest process divide by quanta will cover all of the BurstTimes
+	|*|	But the longest process may have an odd numbered length, as such add one more loop
+	\*/  
+	
+	loops = maximum / Quanta;
+	
+	printf("Number of loops required = %d\n", loops + 1);
+	
+	for(h = 0; h < loops + 1; h++)
+		for(i = 0; i < NumberOfProcesses; i++)
+		{
+			if((RemainingTime[i] > 0) && (RemainingTime[i] >= Quanta)) //Skip over finished processes
+				for(j = 0; j < Quanta; j++)
+					sRR[i + j] = 'A' + i;
+			else if (RemainingTime[i] < Quanta)	//Prevent excess entries
+				for(j = 0; j < RemainingTime[i]; j++) 
+					sRR[i + j] = 'A' + i;
+			
+			RemainingTime[i] -= Quanta; //Decrement remaining time after every pass
+		}
+	
+	
+	printf("Quanta = %d\n", Quanta);
+	printf("sRR = %s\n", sRR);
+	printf("RR AWT = %f\n", *RR_AWT);
 }
 
 int main (void)
@@ -279,9 +273,9 @@ int main (void)
 	read(PID, ArrivalTime, BurstTime, &NumberOfProcesses, &Quanta);
 	
 	//FCFS(PID, ArrivalTime, BurstTime, NumberOfProcesses, sFCFS, &FCFS_AWT);
-	SJF (PID, ArrivalTime, BurstTime, NumberOfProcesses, sSJF, &SJF_AWT);
+	//SJF (PID, ArrivalTime, BurstTime, NumberOfProcesses, sSJF, &SJF_AWT);
 	//STR (PID, ArrivalTime, BurstTime, NumberOfProcesses, sSTR, &STR_AWT);
-	//RR  (PID, ArrivalTime, BurstTime, NumberOfProcesses, Quanta, sRR, &RR_AWT);
+	RR  (PID, ArrivalTime, BurstTime, NumberOfProcesses, Quanta, sRR, &RR_AWT);
 	
 	//write(Quanta, FCFS_AWT, SJF_AWT, STR_AWT, RR_AWT, sFCFS, sSJF, sSTR, sRR);
 }
