@@ -281,4 +281,6 @@ int main (void)
 	RR  (PID, ArrivalTime, BurstTime, NumberOfProcesses, Quanta, sRR, &RR_AWT);
 	
 	//write(Quanta, FCFS_AWT, SJF_AWT, STR_AWT, RR_AWT, sFCFS, sSJF, sSTR, sRR);
+
+	system("pause");
 }
