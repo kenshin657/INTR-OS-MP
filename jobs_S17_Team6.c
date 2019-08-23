@@ -170,11 +170,14 @@ void FCFS(char PID[], int ArrivalTime[], int BurstTime[], int NumberOfProcesses,
 	{
 		for(i = 0; i < BurstTime[j]; i++) //Gantt Chart
 		sFCFS[i + j] = 'A' + j;
-				
-		//Calculating Total Waiting Time
-		ServiceTime += ArrivalTime[j];
-		(*FCFS_AWT) += ServiceTime - BurstTime[j];
+		
+		(*FCFS_AWT) += BurstTime[j];
 	}
+	
+	
+	//Add ArrivalTime of first process
+	(*FCFS_AWT) += ArrivalTime[0];
+	
 	
 	//Calculating Average Waiting Time
 	(*FCFS_AWT) /= NumberOfProcesses;
