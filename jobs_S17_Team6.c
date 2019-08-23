@@ -207,7 +207,7 @@ void FCFS(char PID[], int ArrivalTime[], int BurstTime[], int NumberOfProcesses,
 		}
 		else{
 			if(count > BurstTime[i]) {
-				wt[i] = count - ArrivalTime[i] +1;
+				wt[i] = count - ArrivalTime[i];
 				count += BurstTime[i]; 
 			}
 			else{
@@ -232,12 +232,11 @@ void FCFS(char PID[], int ArrivalTime[], int BurstTime[], int NumberOfProcesses,
 
 void SJF(char PID[], int ArrivalTime[], int BurstTime[], int NumberOfProcesses, char sSJF[], float* SJF_AWT)
 {
-
-
-
-
-
-
+	float fNum = 0.0;
+	int i, j, c, k, nTemp, time;
+	float wt[5];
+	char cTemp;
+	int check[5];
 
 
 }
