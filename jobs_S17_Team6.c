@@ -184,7 +184,7 @@ void FCFS(char PID[], int ArrivalTime[], int BurstTime[], int NumberOfProcesses,
 		}
 		else{
 			if(count > BurstTime[i]) {
-				wt[i] = count - ArrivalTime[i];
+				wt[i] = count - ArrivalTime[i] +1;
 				count += BurstTime[i]; 
 			}
 			else{
@@ -193,12 +193,16 @@ void FCFS(char PID[], int ArrivalTime[], int BurstTime[], int NumberOfProcesses,
 			}	
 		}
 	}
+	printf("LAMAN NG WT: ");
+	for(i = 0; i < NumberOfProcesses; i++) {
+		printf("%f ", wt[i]);
+	}
 
 	for(i = 0; i < NumberOfProcesses; i++) {
 		num = num + wt[i];
 	}
 	
-	(*FCFS_AWT) = num / NumberOfProcesses;
+	(*FCFS_AWT) = num / 5.0;
 	printf("\nsFCFS = %s\n", sFCFS);
 	printf("FCFS AWT = %f\n\n\n", *FCFS_AWT);
 }
