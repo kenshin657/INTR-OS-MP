@@ -176,14 +176,7 @@ void FCFS(char PID[], int ArrivalTime[], int BurstTime[], int NumberOfProcesses,
 		(*FCFS_AWT) += BurstTime[j];
 	}
 	
-	
-	//Add ArrivalTime of first process
-	//(*FCFS_AWT) += ArrivalTime[0];
-	
-	
-	//Calculating Average Waiting Time
-	//(*FCFS_AWT) /= NumberOfProcesses;
-	
+	//CALCULATES AWT
 	for(i = 0; i < NumberOfProcesses; i++) {
 		if(i == 0) {
 			wt[0] = 0;
@@ -206,7 +199,7 @@ void FCFS(char PID[], int ArrivalTime[], int BurstTime[], int NumberOfProcesses,
 	}
 	
 	(*FCFS_AWT) = num / NumberOfProcesses;
-	printf("sFCFS = %s\n", sFCFS);
+	printf("\nsFCFS = %s\n", sFCFS);
 	printf("FCFS AWT = %f\n\n\n", *FCFS_AWT);
 }
 
