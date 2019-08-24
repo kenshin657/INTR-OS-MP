@@ -1,6 +1,12 @@
 #include <stdio.h>
 #include <string.h>
 
+/**
+ *SOURCES USED: https://deepanshubhatti.blogspot.com/2015/10/c-program-for-scheduling-algorithm.html?fbclid=IwAR2X72ksFL1A7GGlSiWVhZebFQxnb57YZaymu6GJDOn50bRU7cGRoKHp7tg
+ https://deepanshubhatti.blogspot.com/2015/10/c-program-for-scheduling-algorithm-sjf.html?fbclid=IwAR3mGUoDo8tTc1cMvR5p9Jic0iKoP6Ijqjlx7vYhPwjKO4F4n5Lz2cevTx0
+ *  
+ */
+
 typedef struct{
     char PID;
 	int aTime;
@@ -167,7 +173,6 @@ void FCFS(char PID[], int ArrivalTime[], int BurstTime[], int NumberOfProcesses,
     }
 
     (*FCFS_AWT) = (float)totalWaitTime/NumberOfProcesses;
-    //printf("\nFCFS\nGantt Chart: %s\n", sFCFS);
     printf("\nAve Wait Time: %f\n\n", *FCFS_AWT);
     
     
@@ -219,48 +224,60 @@ void SJF(char PID[], int ArrivalTime[], int BurstTime[], int NumberOfProcesses, 
     }
 
     (*SJF_AWT) = aWait/NumberOfProcesses;
-    printf("\nAve Wait Time: %f\n", *SJF_AWT);
+    printf("\nAve Wait Time: %f\n\n", *SJF_AWT);
 }
 
 void RR(char PID[], int ArrivalTime[], int BurstTime[], int NumberOfProcesses, int Quanta, char sRR[], float* RR_AWT)
 {
-	int i, j, h, RemainingTime[5], maximum = 0, loops;
-	
-	for(i = 0; i < NumberOfProcesses; i++) 
-	{
-		RemainingTime[i] = BurstTime[i]; //Transfer BurstTime to RemainingTime
-		if (BurstTime[i] > maximum) //Find longest process
-	       maximum = BurstTime[i];
-	}
-	
-	printf("Longest Process = %d\n", maximum);
-	
-	/*\ 
-	|*|	Longest process divide by quanta will cover all of the BurstTimes
-	|*|	But the longest process may have an odd numbered length, as such add one more loop
-	\*/  
-	
-	loops = maximum / Quanta;
-	
-	printf("Number of loops required = %d\n", loops + 1);
-	
-	for(h = 0; h < loops + 1; h++)
-		for(i = 0; i < NumberOfProcesses; i++)
-		{
-			if((RemainingTime[i] > 0) && (RemainingTime[i] >= Quanta)) //Skip over finished processes
-				for(j = 0; j < Quanta; j++)
-					sRR[i + j] = 'A' + i;
-			else if (RemainingTime[i] < Quanta)	//Prevent excess entries
-				for(j = 0; j < RemainingTime[i]; j++) 
-					sRR[i + j] = 'A' + i;
-			
-			RemainingTime[i] -= Quanta; //Decrement remaining time after every pass
+	int i, j, cTime = 0, rem = NumberOfProcesses, flag = 0;
+	float aWait = 0.0;
+	process tmp[NumberOfProcesses];
+
+	for(i = 0; i < NumberOfProcesses; i++) {
+        tmp[i].PID = PID[i];
+        tmp[i].aTime = ArrivalTime[i];
+        tmp[i].bTime = BurstTime[i];
+        tmp[i].rTime = BurstTime[i];
+        tmp[i].wait = 0;
+        tmp[i].exe = 0;
+    } 
+	i = 0;
+	printf("Round Robin\nGantt Chart: ");
+
+	for(cTime = 0, i = 0; rem != 0;) {
+		if(tmp[i].rTime <= Quanta && tmp[i].rTime > 0) {
+			cTime = cTime + tmp[i].rTime;
+			printf("%c", tmp[i].PID);
+			tmp[i].rTime = 0;
+			flag = 1;
 		}
-	
-	
-	printf("Quanta = %d\n", Quanta);
-	printf("sRR = %s\n", sRR);
-	printf("RR AWT = %f\n", *RR_AWT);
+		else if(tmp[i].rTime > 0) {
+			tmp[i].rTime = tmp[i].rTime - Quanta;
+			cTime = cTime + Quanta;
+			printf("%c", tmp[i].PID);
+		}
+		if(tmp[i].rTime	== 0 && flag == 1) {
+			rem--;
+			tmp[i].wait = cTime - tmp[i].aTime - tmp[i].bTime;
+			aWait = aWait + cTime - tmp[i].aTime - tmp[i].bTime;
+			flag == 0;
+		}
+		if(i == NumberOfProcesses-1) {
+			i = 0;
+		}
+		else if(tmp[i+1].aTime <= cTime) {
+			i++;
+		}
+		else {
+			i = 0;
+		}
+	}
+
+	printf("\n%f\n", aWait);
+
+	(*RR_AWT) = aWait / NumberOfProcesses;
+
+	printf("\nAve Wait Time: %f\n", *RR_AWT);
 }
 
 int main (void)
@@ -289,7 +306,7 @@ int main (void)
 	FCFS(PID, ArrivalTime, BurstTime, NumberOfProcesses, sFCFS, &FCFS_AWT);
 	SJF (PID, ArrivalTime, BurstTime, NumberOfProcesses, sSJF, &SJF_AWT);
 	//STR (PID, ArrivalTime, BurstTime, NumberOfProcesses, sSTR, &STR_AWT);
-	//RR  (PID, ArrivalTime, BurstTime, NumberOfProcesses, Quanta, sRR, &RR_AWT);
+	RR(PID, ArrivalTime, BurstTime, NumberOfProcesses, Quanta, sRR, &RR_AWT);
 	
 	//write(Quanta, FCFS_AWT, SJF_AWT, STR_AWT, RR_AWT, sFCFS, sSJF, sSTR, sRR);
 
