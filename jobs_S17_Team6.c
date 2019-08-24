@@ -147,7 +147,7 @@ int read(char PID[], int ArrivalTime[], int BurstTime[], int* NumberOfProcesses,
 void FCFS(char PID[], int ArrivalTime[], int BurstTime[], int NumberOfProcesses, char sFCFS[], float* FCFS_AWT)
 {
 	process tmp[NumberOfProcesses];
-    int i, j, cTime = 0, totalWaitTime = 0;
+    int i, j, k = 0, cTime = 0, totalWaitTime = 0;
     float aWait;
 
     for(i = 0; i < NumberOfProcesses; i++) {
@@ -162,11 +162,22 @@ void FCFS(char PID[], int ArrivalTime[], int BurstTime[], int NumberOfProcesses,
     {
         tmp[i].wait = tmp[i].wait + (cTime - tmp[i].aTime);
         for(j = 0; j < tmp[i].bTime; j++) {
-            printf("%c", tmp[i].PID);
+            //printf("%c", tmp[i].PID);
+			sFCFS[k] = tmp[i].PID;
+			k++;
             cTime++;
         }
     }
 
+	for(i = 0; i < 100; i++) {
+		if(sFCFS[i] == 'A' || sFCFS[i] == 'B' || sFCFS[i] == 'C' || sFCFS[i] == 'D' || sFCFS[i] == 'E') {
+			printf("%c", sFCFS[i]);
+		}
+		else
+		{
+			break;
+		}
+	}
 
     for(i = 0; i < NumberOfProcesses; i++) {
         totalWaitTime = totalWaitTime + tmp[i].wait;
@@ -227,8 +238,8 @@ void SJF(char PID[], int ArrivalTime[], int BurstTime[], int NumberOfProcesses, 
 
 void RR(char PID[], int ArrivalTime[], int BurstTime[], int NumberOfProcesses, int Quanta, char sRR[], float* RR_AWT)
 {
-	int i, j, cTime = 0, rem = NumberOfProcesses, flag = 0;
-	float aWait = 0.0;
+	int i, j, cTime, k = 0,rem = NumberOfProcesses, flag = 0;
+	float aWait = 0;
 	process tmp[NumberOfProcesses];
 
 	for(i = 0; i < NumberOfProcesses; i++) {
@@ -242,36 +253,46 @@ void RR(char PID[], int ArrivalTime[], int BurstTime[], int NumberOfProcesses, i
 	i = 0;
 	printf("Round Robin\nGantt Chart: ");
 
-	for(cTime = 0, i = 0; rem != 0;) {
-		if(tmp[i].rTime <= Quanta && tmp[i].rTime > 0) {
-			cTime = cTime + tmp[i].rTime;
-			printf("%c", tmp[i].PID);
-			tmp[i].rTime = 0;
-			flag = 1;
-		}
-		else if(tmp[i].rTime > 0) {
-			tmp[i].rTime = tmp[i].rTime - Quanta;
-			cTime = cTime + Quanta;
-			printf("%c", tmp[i].PID);
-		}
-		if(tmp[i].rTime	== 0 && flag == 1) {
-			rem--;
-			tmp[i].wait = cTime - tmp[i].aTime - tmp[i].bTime;
-			aWait = aWait + cTime - tmp[i].aTime - tmp[i].bTime;
-			flag == 0;
-		}
-		if(i == NumberOfProcesses-1) {
-			i = 0;
-		}
-		else if(tmp[i+1].aTime <= cTime) {
-			i++;
-		}
-		else {
-			i = 0;
-		}
+	for(cTime=0,i=0; rem != 0;) {
+		if(tmp[i].rTime <= Quanta && tmp[i].rTime > 0)
+              {
+                     cTime = cTime + tmp[i].rTime;
+					 sRR[k] = tmp[i].PID;
+                     tmp[i].rTime = 0;
+                     flag = 1;
+					 k++;
+              }
+              else if(tmp[i].rTime > 0)
+              {
+                     tmp[i].rTime = tmp[i].rTime - Quanta;
+                     cTime = cTime + Quanta;
+					 sRR[k] = tmp[i].PID;
+					 k++;
+              }
+              if(tmp[i].rTime == 0 && flag == 1)
+              {
+                     rem--;
+                     tmp[i].wait = cTime - tmp[i].aTime - tmp[i].bTime;
+                     aWait = aWait + cTime - tmp[i].aTime - tmp[i].bTime;
+                     flag = 0;
+              }
+              if(i == NumberOfProcesses-1)
+                     i = 0;
+              else if(tmp[i+1].aTime <= cTime)
+                     i++;
+              else
+                     i=0;
 	}
 
-	printf("\n%f\n", aWait);
+	for(i = 0; i < 100; i++) {
+		if(sRR[i] == 'A' || sRR[i] == 'B' || sRR[i] == 'C' || sRR[i] == 'D' || sRR[i] == 'E') {
+			printf("%c", sRR[i]);
+		}
+		else
+		{
+			break;
+		}
+	}
 
 	(*RR_AWT) = aWait / NumberOfProcesses;
 
@@ -300,7 +321,7 @@ int main (void)
 	}
 	
 	read(PID, ArrivalTime, BurstTime, &NumberOfProcesses, &Quanta);
-	
+
 	FCFS(PID, ArrivalTime, BurstTime, NumberOfProcesses, sFCFS, &FCFS_AWT);
 	SJF (PID, ArrivalTime, BurstTime, NumberOfProcesses, sSJF, &SJF_AWT);
 	//STR (PID, ArrivalTime, BurstTime, NumberOfProcesses, sSTR, &STR_AWT);
