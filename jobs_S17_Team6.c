@@ -1,7 +1,14 @@
-
-
 #include <stdio.h>
 #include <string.h>
+
+typedef struct{
+    char PID;
+	int aTime;
+	int bTime;
+	int rTime;
+	int wait;
+	int exe;
+}process;
 
 int read(char PID[], int ArrivalTime[], int BurstTime[], int* NumberOfProcesses, int* Quanta)
 {
@@ -125,102 +132,88 @@ int read(char PID[], int ArrivalTime[], int BurstTime[], int* NumberOfProcesses,
 	printf("Quanta: %d\n", *Quanta);
 }
 
-int write(int Quanta, float FCFS_AWT, float SJF_AWT, float STR_AWT, float RR_AWT, char sFCFS[10], char sSJF[10], char sSTR[10], char sRR[10])
-{
-	FILE* File = fopen("input.txt", "a");
-	if(File == NULL)
-	{
-		printf("Error 404: File Not Found");
-		return -1;
-	}
-		
-	fprintf(File, "\n");
-	
-	//Append First Come First Serve
-	fprintf(File, "*FCFS*\n%s\nAWT = %f", sFCFS, FCFS_AWT);
-	fprintf(File, "\n\n");
-	
-	//Append Shortest Job First
-	fprintf(File, "*SJF*\n%s\nAWT = %f", sSJF, SJF_AWT);
-	fprintf(File, "\n\n");
-	
-	//Append Shortest Time Remaining
-	fprintf(File, "*STR*\n%s\nAWT = %f", sSTR, STR_AWT);
-	fprintf(File, "\n\n");
-	
-	//Append Round Robin
-	fprintf(File, "*RR Q= %d*\n%s\nAWT = %f", Quanta, sRR, RR_AWT);
-	
-	fclose(File);
-}
-
 void FCFS(char PID[], int ArrivalTime[], int BurstTime[], int NumberOfProcesses, char sFCFS[], float* FCFS_AWT)
 {
-	int i, j, ServiceTime = 0;
-	float count, wt[5];
-	float num = 0.0;
-		
-	for(j = 0; j < NumberOfProcesses; j++) //Run through all of the processes
-	{
-		for(i = 0; i < BurstTime[j]; i++) //Gantt Chart
-		sFCFS[i + j] = 'A' + j;
-		
-		(*FCFS_AWT) += BurstTime[j];
-	}
-	
-	//CALCULATES AWT
-	for(i = 0; i < NumberOfProcesses; i++) {
-		if(i == 0) {
-			wt[0] = 0;
-			count = ArrivalTime[0] + BurstTime[i];
-		}
-		else{
-			if(count > BurstTime[i]) {
-				wt[i] = count - ArrivalTime[i];
-				count += BurstTime[i]; 
-			}
-			else{
-				wt[i] = 0;
-				count = count + BurstTime[i];
-			}	
-		}
-	}
-	printf("LAMAN NG WT: ");
-	for(i = 0; i < NumberOfProcesses; i++) {
-		printf("%f ", wt[i]);
-	}
+	process tmp[NumberOfProcesses];
+    int i, j, cTime = 0, totalWaitTime = 0;
+    float aWait;
 
-	for(i = 0; i < NumberOfProcesses; i++) {
-		num = num + wt[i];
-	}
-	
-	(*FCFS_AWT) = num / 5.0;
-	printf("\nsFCFS = %s\n", sFCFS);
-	printf("FCFS AWT = %f\n\n\n", *FCFS_AWT);
+    for(i = 0; i < NumberOfProcesses; i++) {
+        tmp[i].PID = PID[i];
+        tmp[i].aTime = ArrivalTime[i];
+        tmp[i].bTime = BurstTime[i];
+        tmp[i].wait = 0;
+    } 
+
+    printf("\nFCFS\nGantt Chart: ");
+    for ( i = 0; i < NumberOfProcesses; i++)
+    {
+        tmp[i].wait = tmp[i].wait + (cTime - tmp[i].aTime);
+        for(j = 0; j < tmp[i].bTime; j++) {
+            printf("%c", tmp[i].PID);
+            cTime++;
+        }
+    }
+
+
+    for(i = 0; i < NumberOfProcesses; i++) {
+        totalWaitTime = totalWaitTime + tmp[i].wait;
+    }
+
+    (*FCFS_AWT) = (float)totalWaitTime/NumberOfProcesses;
+    //printf("\nFCFS\nGantt Chart: %s\n", sFCFS);
+    printf("\nAve Wait Time: %f\n\n", *FCFS_AWT);
+    
+    
+}
+
+int sjfChecker(process pr[], int NumberOfProcesses, int cTime) {
+    int i, time = 99, res;
+    for(i = 0; i < NumberOfProcesses; i++) {
+        if(pr[i].aTime <= cTime && pr[i].exe == 0) {
+            if(time > pr[i].bTime) {
+                time = pr[i].bTime;
+                res = i;
+            }
+        }
+    }
+
+    pr[res].exe = 1;
+    return res;
 }
 
 void SJF(char PID[], int ArrivalTime[], int BurstTime[], int NumberOfProcesses, char sSJF[], float* SJF_AWT)
 {
-	float fNum = 0.0;
-	int i, j, c, k, nTemp, time;
-	float wt[5];
-	char cTemp;
-	int check[5];
 
+    process tmp[NumberOfProcesses];
+    int i, j=0, curProcess, cTime = 0, totalWaitTime = 0;
+    float aWait;
+    int chart[50];
 
-}
+    for(i = 0; i < NumberOfProcesses; i++) {
+        tmp[i].PID = PID[i];
+        tmp[i].aTime = ArrivalTime[i];
+        tmp[i].bTime = BurstTime[i];
+        tmp[i].rTime = BurstTime[i];
+        tmp[i].wait = 0;
+        tmp[i].exe = 0;
+    } 
 
+    printf("SJF\nGantt Chart: ");
+    for(i = 0; i < NumberOfProcesses; i++) {
+        curProcess = sjfChecker(tmp, NumberOfProcesses, cTime);
+        tmp[curProcess].wait = cTime - tmp[curProcess].aTime;
+        cTime = cTime + tmp[i].bTime;
+        aWait = aWait + tmp[i].wait;
+        chart[i] = curProcess;   
+    }
 
-void STR(char PID[], int ArrivalTime[], int BurstTime[], int NumberOfProcesses, char sSTR[], float* STR_AWT)
-{
+    for(i = 0; i < NumberOfProcesses; i++) {
+        printf("%c", tmp[chart[i]].PID);
+    }
 
-
-
-
-
-
-
-
+    (*SJF_AWT) = aWait/NumberOfProcesses;
+    printf("\nAve Wait Time: %f\n", *SJF_AWT);
 }
 
 void RR(char PID[], int ArrivalTime[], int BurstTime[], int NumberOfProcesses, int Quanta, char sRR[], float* RR_AWT)
@@ -266,7 +259,7 @@ void RR(char PID[], int ArrivalTime[], int BurstTime[], int NumberOfProcesses, i
 
 int main (void)
 {
-	char PID[5], sFCFS[45], sSJF[45], sSTR[45], sRR[45];
+	char PID[5], sFCFS[99], sSJF[45], sSTR[45], sRR[45];
 	float FCFS_AWT = 0, SJF_AWT = 0, STR_AWT = 0, RR_AWT = 0;
 	int ArrivalTime[5], BurstTime[5], NumberOfProcesses, Quanta = 0, i;
 	
@@ -288,9 +281,9 @@ int main (void)
 	read(PID, ArrivalTime, BurstTime, &NumberOfProcesses, &Quanta);
 	
 	FCFS(PID, ArrivalTime, BurstTime, NumberOfProcesses, sFCFS, &FCFS_AWT);
-	//SJF (PID, ArrivalTime, BurstTime, NumberOfProcesses, sSJF, &SJF_AWT);
+	SJF (PID, ArrivalTime, BurstTime, NumberOfProcesses, sSJF, &SJF_AWT);
 	//STR (PID, ArrivalTime, BurstTime, NumberOfProcesses, sSTR, &STR_AWT);
-	RR  (PID, ArrivalTime, BurstTime, NumberOfProcesses, Quanta, sRR, &RR_AWT);
+	//RR  (PID, ArrivalTime, BurstTime, NumberOfProcesses, Quanta, sRR, &RR_AWT);
 	
 	//write(Quanta, FCFS_AWT, SJF_AWT, STR_AWT, RR_AWT, sFCFS, sSJF, sSTR, sRR);
 
