@@ -174,8 +174,6 @@ void FCFS(char PID[], int ArrivalTime[], int BurstTime[], int NumberOfProcesses,
 
     (*FCFS_AWT) = (float)totalWaitTime/NumberOfProcesses;
     printf("\nAve Wait Time: %f\n\n", *FCFS_AWT);
-    
-    
 }
 
 int sjfChecker(process pr[], int NumberOfProcesses, int cTime) {
