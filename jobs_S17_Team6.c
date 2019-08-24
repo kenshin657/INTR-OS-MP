@@ -22,7 +22,7 @@ int read(char PID[], int ArrivalTime[], int BurstTime[], int* NumberOfProcesses,
 	}
 	
 	char Character;	
-	int Number = 0, i, TemporaryNumber, Index = -2, NP = 0;
+	int Number = 0, i, TemporaryNumber, Index = -2, NP = 0, NumberOfCommas = 0;
 	int Values[11];
 	
 	for(i = 0; i < 11; i++) //Intializate Values
@@ -40,26 +40,28 @@ int read(char PID[], int ArrivalTime[], int BurstTime[], int* NumberOfProcesses,
 		
 		else if(Character == 44 || Character == 81) //Check if Character is a comma or a Q
 		{
-			if((i != 0) && (i % 2 == 0) && (Values[i] > Values[i - 2]))
-			{
-				printf("Arrival times must be greater than or equal to the arrival time before it");
-				return -1;
-			}
+			if(NumberOfCommas > 0)
+				if((i != 0) && (i % 2 == 0) && (Values[i] > Values[i - 2]))
+				{
+					printf("Arrival times must be greater than or equal to the arrival time before it");
+					return -1;
+				}
 			
 			else if((i % 2 == 1) && (Number < 0))
-			{
-				printf("Burst times must be greater than 0");
-				return -1;
-			}
+				{
+					printf("Burst times must be greater than 0");
+					return -1;
+				}
 			
 			else
-			{
-				Values[i] = Number;
-				i++;
-			}
+				{
+					Values[i] = Number;
+					i++;
+				}
 			
 			Index++;
 			Number = 0;
+			NumberOfCommas++;
 			//printf("Index after scanning a comma: %d\n", Index);
 		}
 		
@@ -76,32 +78,36 @@ int read(char PID[], int ArrivalTime[], int BurstTime[], int* NumberOfProcesses,
 			
 			//printf("i: %d, Number: %d\n", i, Number);
 		}
-	
-	for(i = 0; i < 11; i++)
-		if(i != NP * 2)
-		Values[i] = Values[i + 1];
 		
+	fclose(File);
+	
+	File = fopen("input.txt", "r");
+	if(File == NULL)
+	{
+		printf("Error 404: File Not Found");
+		return -1;
+	}
+		
+	//Get Quanta
 	while((Character = fgetc(File)) != EOF)
 		if (Character == 61)
-		{
-			Values[2 * NP + 1] = Number;
-			i++;
-			
 			Number = 0;
-		}
-		
+			
 		else if(Character > 47 && Character < 58)
 		{		
 			TemporaryNumber = Character - 48;
 			
-			//printf("i: %d, TemporaryNumber: %d\n", i, TemporaryNumber);
+			//printf("TemporaryNumber: %d\n", TemporaryNumber);
 			
 			Number = Number * 10 + (TemporaryNumber); //Convert char to int
 			
-			//printf("i: %d, Number: %d\n", i, Number);
-		}
+			//printf("Number: %d\n", Number);
 			
-
+			Values[2 * NP] = Number;
+		}
+	
+	fclose(File);		
+	
 	/*\
 	|*|	Format is PID, Arrival Time, and then Burst Time, 
 	|*|	Indices start with 0, 
