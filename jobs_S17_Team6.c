@@ -5,6 +5,14 @@
  *SOURCES USED: https://deepanshubhatti.blogspot.com/2015/10/c-program-for-scheduling-algorithm.html?fbclid=IwAR2X72ksFL1A7GGlSiWVhZebFQxnb57YZaymu6GJDOn50bRU7cGRoKHp7tg
  https://deepanshubhatti.blogspot.com/2015/10/c-program-for-scheduling-algorithm-sjf.html?fbclid=IwAR3mGUoDo8tTc1cMvR5p9Jic0iKoP6Ijqjlx7vYhPwjKO4F4n5Lz2cevTx0
  *  
+ * https://www.quora.com/How-do-I-write-a-C-program-to-implement-a-SRTF-Shortest-Remaining-Time-First-scheduling-algorithm-along-with-displaying-the-Gantt-chart?fbclid=IwAR3oAzl_knsg0Qn_Iy1ZhK9HHsykVq1XtQwJJs6-dOie8vkGbPHVt-bFXDs
+ */
+
+
+/**
+ * Hans Lao -11712562
+ * Jomari Morales - 11728612
+ * Kyle Tagle - 11617101
  */
 
 typedef struct{
@@ -299,6 +307,39 @@ void RR(char PID[], int ArrivalTime[], int BurstTime[], int NumberOfProcesses, i
 	printf("\nAve Wait Time: %f\n", *RR_AWT);
 }
 
+void STR(char PID[], int ArrivalTime[], int BurstTime[], int NumberOfProcesses, char sSTR[], float* STR_AWT)
+{
+	int rt[10], eTime, i, small;
+	int remain = 0, time, wait=0;
+		
+	for(i=0;i<NumberOfProcesses;i++){
+		rt[i]  = BurstTime[i];
+	}
+
+	rt[9]=9999;
+	for(time = 0; remain != NumberOfProcesses; time++){
+		small = 9;
+		for(i=0;i<NumberOfProcesses;i++)	{
+			if(ArrivalTime[i]<=time && rt[i]<rt[small] && rt[i]>0){
+				sSTR[time] = PID[i];
+				small = i;
+				}
+		}
+	rt[small]--;
+	
+		if(rt[small]==0){
+			remain++;
+			eTime = time + 1;
+			wait += eTime - BurstTime[small]  -ArrivalTime[small];
+			}
+	}
+	*STR_AWT += wait *1.0 / NumberOfProcesses;
+	
+	printf("STR\n");
+	printf("%s\n",sSTR);
+	printf("Average waiting time = %f\n\n",*STR_AWT);
+}
+
 int main (void)
 {
 	char PID[5], sFCFS[99], sSJF[45], sSTR[45], sRR[45];
@@ -324,7 +365,7 @@ int main (void)
 
 	FCFS(PID, ArrivalTime, BurstTime, NumberOfProcesses, sFCFS, &FCFS_AWT);
 	SJF (PID, ArrivalTime, BurstTime, NumberOfProcesses, sSJF, &SJF_AWT);
-	//STR (PID, ArrivalTime, BurstTime, NumberOfProcesses, sSTR, &STR_AWT);
+	STR(PID, ArrivalTime, BurstTime, NumberOfProcesses, sSTR, &STR_AWT);
 	RR(PID, ArrivalTime, BurstTime, NumberOfProcesses, Quanta, sRR, &RR_AWT);
 	
 	//write(Quanta, FCFS_AWT, SJF_AWT, STR_AWT, RR_AWT, sFCFS, sSJF, sSTR, sRR);
